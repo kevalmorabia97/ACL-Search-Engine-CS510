@@ -8,7 +8,6 @@ from os import listdir
 lemmatizer = WordNetLemmatizer()
 porter_stemmer = PorterStemmer()
 tokenizer = RegexpTokenizer(r'\w+')
-bad_words = {'aed','oed','eed'}
 
 def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal):
     '''
