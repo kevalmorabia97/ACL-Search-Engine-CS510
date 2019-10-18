@@ -58,8 +58,8 @@ def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopw
         processed_doc = preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
         if processed_doc:
             fo.write(doc_name + " " + str(processed_doc) + "\n")
-        print(doc_name + " done")
     fo.close()
-    print("preprocessed_stemming_lemma")
 
-# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
+# Run these: 
+# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed", stemming = True, lower_case = True, lemma = True, stopword_removal = True)
+# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed", stemming = False, lower_case = True, lemma = False, stopword_removal = True)
