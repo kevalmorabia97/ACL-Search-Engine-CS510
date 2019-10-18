@@ -22,6 +22,7 @@ def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
     try:
         with open(doc_path, 'r') as f:
             data = f.read()
+        f.close()
     except:
         return False
 
