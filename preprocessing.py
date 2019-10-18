@@ -51,7 +51,7 @@ def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
     return(output)
 
 def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopword_removal = True):
-    fout = "C:/Users/Dell-pc/Desktop/preprocessed_stemming_lemma.txt"
+    fout = "preprocessed_stemming_lemma.txt"
     fo = open(fout, "w")
     for doc_name in  listdir(dir_path):
         doc_path = dir_path + '/'+ doc_name
@@ -62,35 +62,4 @@ def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopw
     fo.close()
     print("preprocessed_stemming_lemma")
 
-# preprocess1("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
-
-# def preprocess2(dir_path, stemming = True, lower_case = True, lemma = False, stopword_removal = True):
-#     fout = "C:/Users/Dell-pc/Desktop/preprocessed_stemming.txt"
-#     fo = open(fout, "w")
-#     for doc_name in  listdir(dir_path):
-#         doc_path = dir_path + '/'+ doc_name
-#         processed_doc = preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
-#         if processed_doc:
-#             fo.write(doc_name + " " + str(processed_doc) + "\n")
-#         print(doc_name + " done")
-#     fo.close()
-#     print("preprocessed_stemming")
-#
-# preprocess2("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
-#
-# def preprocess3(dir_path, stemming = False, lower_case = True, lemma = True, stopword_removal = True):
-#     fout = "C:/Users/Dell-pc/Desktop/preprocessed_lemma.txt"
-#     fo = open(fout, "w")
-#     for doc_name in  listdir(dir_path):
-#         doc_path = dir_path + '/'+ doc_name
-#         processed_doc = preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
-#         if processed_doc:
-#             fo.write(doc_name + " " + str(processed_doc) + "\n")
-#         print(doc_name + " done")
-#     fo.close()
-#     print("preprocessed_lemma")
-#
-# preprocess3("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
-
-
-# print(preprocess_document("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed/C00-1002.tei.xml",True,True,True,True))
+# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
