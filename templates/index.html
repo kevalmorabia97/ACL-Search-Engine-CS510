@@ -1,17 +1,160 @@
 <!DOCTYPE html>
-<html>
-<head><title>CS510 Pre Project Demo</title></head>
+<html lang="en">
+<head>
+<title>CS510 Pre Project Demo</title>
+<meta charset="utf-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+var numResults;
+var query="";
+var ip ="";
+var resultPage=0;
+
+var URL="http://127.0.0.1:5000/"
+
+$(function (){
+$("#SearchWait").hide();
+$("#next").hide();
+$("#backpage").hide();
+$("#message").hide();
+});
+
+var get_results = function(){
+    $(".search-results-container").empty();
+
+    $.ajax({
+        type: 'POST',
+        url: URL + "search/",
+        data: {query: query, ip: ip, page: resultPage},
+        dataType: 'json',
+        success: function(resultData)
+        {
+            var limit = Math.min(resultData.titles.length, 10)
+            for (var i=0; i < limit; ++i)
+            {
+                rank = resultPage * 10 + i
+                $(".search-results-container").append("<hr>");
+                $(".search-results-container").append("&nbsp;<p style=\"font-size:20px; color:DarkBlue\">" + "<a target=\"_blank\" href=\"" + resultData.urls[i] +"\" id=\""+resultData.ids[i]+ "\" rank=\"" + rank +"\">"+resultData.titles[i]+"</a>" + "</p>");
+                buttons = "<p><input type=\"radio\" id=\"rel\" name=\"" + resultData.ids[i] + "\" value=\"rel_" + resultData.ids[i] + "_" + rank +"\"> <label for=\"relevant\"><font color=\"green\">Relevant</font></label>";
+                buttons += "&nbsp&nbsp<input type=\"radio\" id=\"nonrel\" name=\"" + resultData.ids[i] + "\" value=\"non_" + resultData.ids[i] + "_" + rank +"\"> <label for=\"notrelevant\"><font color=\"red\">NOT Relevant</font></label></p>";
+                $(".search-results-container").append(buttons);
+                $(".search-results-container").append("<table><tr><td>" + resultData.abstracts[i] + "</td></tr></table>");
+            }
+
+            $("#next").show();
+            $("#backpage").show();
+            $("#message").hide();
+
+            if(limit == 0 && resultPage == 0)
+            {
+                $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue\">Unfortunately, we were not able to find papers that match your query.</p>");
+                $("#next").hide();
+                $("#backpage").hide();
+            }
+
+            if(limit == 0 && resultPage != 0)
+            {
+                $("#next").hide();
+            }
+
+            if(resultPage == 0)
+            {
+                $("#backpage").hide();
+            }
+
+
+        }
+    });
+};
+
+$(document).ready(function(){
+
+        $("#search-button").click(function(){
+                resultPage = 0;
+                query = $("#query").val();
+                example_image = "none";
+                get_results();
+        });
+
+        $("#next").click(function(){
+                resultPage = resultPage + 1
+                query = $("#query").val();
+                get_results();
+        });
+
+
+        $("#backpage").click(function(){
+                resultPage = resultPage - 1
+                query = $("#query").val();
+                get_results();
+        });
+
+
+        $("#example1acl").click(function(){
+                resultPage = 0;
+                query ="Neural Network Architecture";
+                document.getElementById("query").value=query;
+                example_image = "none";
+                get_results();
+        });
+
+        $("#example2acl").click(function(){
+                resultPage = 0;
+                query = "Parse Tree Example";
+                document.getElementById("query").value=query;
+                example_image = "none";
+                get_results();
+        });
+
+        $(".search-results-container").on("change", 'input[name^="paperid"]:checked', function() {
+                var selectedVal = $(this).val();
+                $.ajax({
+                type: 'POST',
+                url: URL + "buttonlog/",
+                data: JSON.stringify({query: query, value: selectedVal, ip: ip}),
+                });
+        });
+
+        $(".search-results-container").delegate("a", "click",function(){
+            var url = $(this).attr("id");
+            var r = $(this).attr("rank");
+            $.ajax({
+            type: 'POST',
+            url: URL + "urllog/",
+            data: JSON.stringify({query: query, value: url, ip: ip, rank:r}),
+            });
+        });
+
+        $("#query").keyup(function(event) {
+            if (event.keyCode === 13) {
+            $("#search-button").click();
+        }
+        });
+
+        $.getJSON('https://api.ipify.org?format=json', function(data){
+            ip = data.ip;
+        });
+
+});
+</script>
+</head>
 <body>
-    <center>
-        <h1>ACL Paper Search Engine</h1>
-        <font size="2">Search for papers in the domain of natural language processing</font>
-        <br>
-        <br>
-        <form method="POST">
-            <input id="query" type="text" name="query" size="50">
-            <input id="search-button" type="button" value="Find Papers !">
-        </form>
-    </center>
-    <div class="search-result-container"></div>
+<center>
+    <h1>ACL Paper Search Engine</h1>
+    <font size="2">Search for papers in the domain of natural language processing</font>
+    <br><br>
+    <input id="query" type="text" size="50" />
+    <input id="search-button" type="button" value="Find Papers !" />
+    <br>
+</center>
+<br>
+<div class="search-results-container"> </div>
+<center>
+<button type="button" id="backpage" value="none"> <b>Go Back</b></button>
+<button type="button" id="next" value="none"><b>I Want More !</b></button>
+
+</center>
+<br><br>
 </body>
 </html>
