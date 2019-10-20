@@ -4,6 +4,7 @@ from nltk.tokenize import RegexpTokenizer
 import re
 from nltk.stem import WordNetLemmatizer
 from os import listdir
+import yaml
 
 lemmatizer = WordNetLemmatizer()
 porter_stemmer = PorterStemmer()
@@ -46,6 +47,7 @@ def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
 
         if lemma:
             new_text = [lemmatizer.lemmatize(word) for word in new_text]
+            
         output[tag] = new_text
 
     return(output)
@@ -58,8 +60,18 @@ def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopw
         processed_doc = preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
         if processed_doc:
             fo.write(doc_name + " " + str(processed_doc) + "\n")
+        print(doc_name + " done")
     fo.close()
 
-# Run these: 
-# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed", stemming = True, lower_case = True, lemma = True, stopword_removal = True)
-# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed", stemming = False, lower_case = True, lemma = False, stopword_removal = True)
+# preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
+
+def read_file(file_path = "preprocessed_stemming_lemma.txt"):
+    file = open(file_path, "r")
+    data = {}
+    for line in file.readlines():
+        line = line.split(".xml")
+        data[line[0]] = yaml.load(line[1])
+    return(data)
+
+# read_file()
+
