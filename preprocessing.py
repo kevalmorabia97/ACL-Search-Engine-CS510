@@ -90,18 +90,18 @@ def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopw
 # preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
 
 def read_file():
-    c1 = open("/data/corpus_0.txt", "r")
-    c2 = open("/data/corpus_8000.txt", "r")
-    c3 = open("/data/corpus_16000.txt", "r")
-    c4 = open("/data/corpus_24000.txt", "r")
-    c5 = open("/data/corpus_32000.txt", "r")
+    c1 = open("data/corpus_0.txt", "r")
+    c2 = open("data/corpus_8000.txt", "r")
+    c3 = open("data/corpus_16000.txt", "r")
+    c4 = open("data/corpus_24000.txt", "r")
+    c5 = open("data/corpus_32000.txt", "r")
     c = c1.read().splitlines() + c2.read().splitlines() + c3.read().splitlines() + c4.read().splitlines() + c5.read().splitlines()
 
-    tc1 = [ast.literal_eval(line.rstrip('\n')) for line in open("/data/tokenized_corpus_0.txt", "r")]
-    tc2 = [ast.literal_eval(line.rstrip('\n')) for line in open("/data/tokenized_corpus_8000.txt", "r")]
-    tc3 = [ast.literal_eval(line.rstrip('\n')) for line in open("/data/tokenized_corpus_16000.txt", "r")]
-    tc4 = [ast.literal_eval(line.rstrip('\n')) for line in open("/data/tokenized_corpus_24000.txt", "r")]
-    tc5 = [ast.literal_eval(line.rstrip('\n')) for line in open("/data/tokenized_corpus_32000.txt", "r")]
+    tc1 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_0.txt", "r")]
+    tc2 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_8000.txt", "r")]
+    tc3 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_16000.txt", "r")]
+    tc4 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_24000.txt", "r")]
+    tc5 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_32000.txt", "r")]
     tc = tc1 + tc2 + tc3 + tc4 + tc5
 
     return(c, tc)
