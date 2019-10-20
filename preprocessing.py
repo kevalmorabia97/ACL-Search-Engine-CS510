@@ -78,8 +78,8 @@ def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
     # return temp
 
 def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopword_removal = True):
-    corpus = open("corpus.txt", "w")
-    tokenized_corpus = open("tokenized_corpus.txt","w")
+    corpus = open("data/corpus.txt", "w")
+    tokenized_corpus = open("data/tokenized_corpus.txt","w")
     # output = open("output.txt", "w")
     i=0
     for doc_name in  listdir(dir_path):
@@ -100,8 +100,8 @@ def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopw
 
 def read_file():
     #return tokenized_corpus and corpus.
-    c = [(ast.literal_eval(line)) for line in open("corpus.txt", "r").read().splitlines()]
-    tc = [line.split(',') for line in open("tokenized_corpus.txt", "r", encoding="ISO-8859-1").read().splitlines()]
+    c = [(ast.literal_eval(line)) for line in open("data/corpus.txt", "r").read().splitlines()]
+    tc = [line.split(',') for line in open("data/tokenized_corpus.txt", "r", encoding="ISO-8859-1").read().splitlines()]
     # print(c)
     # print(tc)
     return(c, tc)
