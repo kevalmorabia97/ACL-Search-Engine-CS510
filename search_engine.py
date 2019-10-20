@@ -29,6 +29,17 @@ def preprocess(doc):
     return doc
 
 
-def store_relevance_judgements():
-    ## TODO ##
-    pass
+def store_relevance_judgements(query, doc_id, ip, is_rel):
+    """
+    Args:
+        query: str
+        doc_id: unique ID corresponding to a document
+        ip: IP address of the user
+        is_rel: 0 (not rel) or 1 (rel)
+    """
+    if is_rel not in ['0','1']:
+        print('Invalid Relevance Feedback:', is_rel)
+        return
+    
+    with open('data/relevance_feedback.txt', 'a') as f:
+        f.write(','.join([str(i) for i in (query, doc_id, ip, is_rel)]) + '\n')
