@@ -4,6 +4,7 @@ from nltk.tokenize import RegexpTokenizer
 import re
 from nltk.stem import WordNetLemmatizer
 from os import listdir
+import os
 import ast
 
 lemmatizer = WordNetLemmatizer()
@@ -40,6 +41,7 @@ def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
         f.close()
     except:
         return (False,False,False)
+        # return False
 
     text = re.split('\<(.*?)\>', data)
     tags = re.findall('\<(.*?)\>', data)
@@ -68,41 +70,63 @@ def preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
             new_text = [lemmatizer.lemmatize(word) for word in new_text]
         output[tag] = new_text
 
+
     corpus = " ".join(corpus).replace("\n",'')
     tokenized_corpus = [val for sublist in output.values() for val in sublist]
     return(corpus, tokenized_corpus, temp)
+    # return(tokenized_corpus)
+    # return temp
 
 def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopword_removal = True):
     corpus = open("corpus.txt", "w")
     tokenized_corpus = open("tokenized_corpus.txt","w")
-    output = open("output.txt", "w")
+    # output = open("output.txt", "w")
     i=0
     for doc_name in  listdir(dir_path):
         doc_path = dir_path + '/'+ doc_name
         doc, tokenized_doc, output_dict = preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
+        # tokenized_doc = preprocess_document(doc_path, stemming, lower_case, lemma, stopword_removal)
         if doc:
-            corpus.write(doc + "\n")
-            tokenized_corpus.write(str(tokenized_doc) + "\n")
-            output.write(str(output_dict) + "\n")
+            output_dict["id"] = i
+            corpus.write(str(output_dict) + "\n")
+            tokenized_corpus.write(", ".join(tokenized_doc) + "\n")
+            # output.write(str(output_dict) + "\n")
         i=i+1
-        print(i)
+#         print(i)
+        if i==5000:
+            break
 
 # preprocess("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
 
 def read_file():
-    c1 = open("data/corpus_0.txt", "r")
-    c2 = open("data/corpus_8000.txt", "r")
-    c3 = open("data/corpus_16000.txt", "r")
-    c4 = open("data/corpus_24000.txt", "r")
-    c5 = open("data/corpus_32000.txt", "r")
-    c = c1.read().splitlines() + c2.read().splitlines() + c3.read().splitlines() + c4.read().splitlines() + c5.read().splitlines()
-
-    tc1 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_0.txt", "r")]
-    tc2 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_8000.txt", "r")]
-    tc3 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_16000.txt", "r")]
-    tc4 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_24000.txt", "r")]
-    tc5 = [ast.literal_eval(line.rstrip('\n')) for line in open("data/tokenized_corpus_32000.txt", "r")]
-    tc = tc1 + tc2 + tc3 + tc4 + tc5
-
+    #return tokenized_corpus and corpus.
+    c = [(ast.literal_eval(line)) for line in open("corpus.txt", "r").read().splitlines()]
+    tc = [line.split(',') for line in open("tokenized_corpus.txt", "r", encoding="ISO-8859-1").read().splitlines()]
+    # print(c)
+    # print(tc)
     return(c, tc)
 
+def split_file(filepath, lines_per_file=8000):
+    """splits file at `filepath` into sub-files of length `lines_per_file`
+    """
+    lpf = lines_per_file
+    path, filename = os.path.split(filepath)
+    with open(filepath, 'r') as r:
+        name, ext = os.path.splitext(filename)
+        try:
+            w = open(os.path.join(path, '{}_{}{}'.format(name, 0, ext)), 'w')
+            for i, line in enumerate(r):
+                if not i % lpf:
+                    #possible enhancement: don't check modulo lpf on each pass
+                    #keep a counter variable, and reset on each checkpoint lpf.
+                    w.close()
+                    filename = os.path.join(path,
+                                            '{}_{}{}'.format(name, i, ext))
+                    w = open(filename, 'w')
+                w.write(line)
+        finally:
+            w.close()
+
+# split_file("corpus.txt")
+# split_file("output.txt")
+# split_file("tokenized_corpus.txt")
