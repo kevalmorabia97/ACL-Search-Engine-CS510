@@ -3,7 +3,7 @@ import numpy as np
 
 from rank_bm25 import BM25Okapi
 from rank_bm25 import BM25Plus
-import preprocessing
+import preprocessing as p
 
 def get_top_k_docs(query, k=10):
     """
@@ -27,3 +27,6 @@ def get_top_k_docs(query, k=10):
 def store_relevance_judgements():
     ## TODO ##
     pass
+
+
+corpus, tokenized_corpus = p.read_file()
