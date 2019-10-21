@@ -15,3 +15,9 @@ nltk==3.4.5
 Flask_Cors==3.0.8
 numpy==1.17.2
 ```
+
+**Contributers:**
+1. Keval Morabia (kevalmorabia97) 
+2. Tara Vijaykumar (tara-vijaykumar)
+3. Malcolm Tivelius (malcolmtivelius)
+4. Shubham Singhal (ssinghaldev)
