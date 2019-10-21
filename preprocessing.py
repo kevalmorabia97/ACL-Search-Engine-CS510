@@ -6,6 +6,7 @@ from nltk.stem import WordNetLemmatizer
 from os import listdir
 import os
 import ast
+import pickle
 
 lemmatizer = WordNetLemmatizer()
 porter_stemmer = PorterStemmer()
@@ -100,8 +101,10 @@ def preprocess(dir_path, stemming = True, lower_case = True, lemma = True, stopw
 
 def read_file():
     #return tokenized_corpus and corpus.
-    c = [(ast.literal_eval(line)) for line in open("data/corpus.txt", "r").read().splitlines()]
-    tc = [line.split(',') for line in open("data/tokenized_corpus.txt", "r", encoding="ISO-8859-1").read().splitlines()]
+    # c = [(ast.literal_eval(line)) for line in open("data/corpus.txt", "r").read().splitlines()]
+    # tc = [line.split(',') for line in open("data/tokenized_corpus.txt", "r", encoding="ISO-8859-1").read().splitlines()]
+    c = pickle.load(open('data/corpus.pkl','rb'))
+    tc = pickle.load(open('data/tokenized_corpus.pkl','rb'))
     # print(c)
     # print(tc)
     return(c, tc)
