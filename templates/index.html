@@ -31,18 +31,19 @@ var get_results = function(){
             var limit = Math.min(resultData.titles.length, 10)
             for (var i=0; i < limit; ++i){
                 rank = resultPage * 10 + i
-                $(".search-results-container").append("<hr>");
-                $(".search-results-container").append("&nbsp;<p style=\"font-size:20px; color:DarkBlue\">" + resultData.titles[rank] + "</p>");
-                buttons = "<p><input type=\"radio\" id=\"rel\" name=\"" + resultData.ids[rank] + "\" value=\"rel_" + resultData.ids[rank] + "_" + rank +"\"> <label for=\"relevant\"><font color=\"green\">Relevant</font></label>" 
-                        + "&nbsp&nbsp<input type=\"radio\" id=\"nonrel\" name=\"" + resultData.ids[rank] + "\" value=\"non_" + resultData.ids[rank] + "_" + rank +"\"> <label for=\"notrelevant\"><font color=\"red\">NOT Relevant</font></label></p>";
+                $(".search-results-container").append("<hr><div class=\"query-result\">");
+                $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue; margin:0px;\">" + resultData.titles[rank] + "</p>");
+                buttons = "<p><input type=\"radio\" id=\"rel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"rel_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"rel_" + resultData.ids[rank] + "\"><font style=\"background-color: aliceblue; border: 2px solid;\" color=\"green\">Relevant</font></label>" 
+                        + "<input type=\"radio\" id=\"notrel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"non_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"notrel_" + resultData.ids[rank] + "\"><font style=\"background-color: antiquewhite; border: 2px solid;\" color=\"red\">Not Relevant</font></label></p>";
                 $(".search-results-container").append(buttons);
                 $(".search-results-container").append("<table><tr><td>" + resultData.abstracts[rank] + "</td></tr></table>");
                 $(".search-results-container").append("<input type=button class=\"search-related\" name=\"" + resultData.titles[rank] + "\" value=\"Show similar papers\">");
+                $(".search-results-container").append("</div>");
             }
 
             // Saving Relevance Feedback results
             $('input[type=radio]').on('change', function(){
-                $.post(URL+'save_relevance/', {query: query, ip: ip, doc_id: this.name, is_rel: this.id == 'rel' ? 1 : 0}, dataType='json');
+                $.post(URL+'save_relevance/', {query: query, ip: ip, doc_id: this.name, is_rel: this.id == 'rel' ? 1 : -1}, dataType='json');
             });
 
             // Searching related papers
@@ -125,21 +126,39 @@ $(document).ready(function(){
 
 });
 </script>
+
+<style>
+
+.my-button{
+	background-color: #2f49ac;
+	border-radius: 7px;
+    height: 30px;
+    color: #ffffff
+}
+
+.search-related {
+	background-color: #ee980f;
+	border-radius: 7px;
+    height: 30px;
+    color: #ffffff
+}
+
+</style>
+
 </head>
 <body>
 <center>
     <h1>ACL Paper Search Engine</h1>
-    <font size="2">Search for papers in the domain of natural language processing</font>
-    <br><br>
-    <input id="query" type="text" size="75" />
-    <input id="search-button" type="button" value="Find Papers !" />
-    <br>
+    <font size="3">Search for papers in the domain of natural language processing</font>
+    <p style="color: crimson;">Masterminds behind this tool: <b style="font-family: Georgia,Times,Times New Roman,serif;">Keval Morabia, Tara Vijaykumar, Malcolm Tivelius, Shubham Singhal</b></p>
+    <input id="query" type="text" size="75px" style="height: 20px; border-radius: 7px;"/>
+    <button type="button" id="search-button" class="my-button" value="none"> <b>Find Papers !</b></button>
 </center>
 <br>
 <div class="search-results-container"> </div>
 <center>
-<button type="button" id="backpage" value="none"> <b>Go Back</b></button>
-<button type="button" id="next" value="none"><b>I Want More !</b></button>
+<button type="button" id="backpage" class="my-button" value="none"> <b>Go Back</b></button>
+<button type="button" id="next" class="my-button" value="none"><b>I Want More !</b></button>
 
 </center>
 <br><br>

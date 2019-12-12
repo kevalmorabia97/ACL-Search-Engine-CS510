@@ -1,5 +1,7 @@
-from preprocessing import preprocess_query
+import re
 import time
+
+from preprocessing import preprocess_query
 
 
 def get_top_k_docs(model, query, corpus, k=100):
@@ -16,6 +18,10 @@ def get_top_k_docs(model, query, corpus, k=100):
     query_words = preprocess_query(query, stemming=False, lower_case=True, lemma=False, stopword_removal=True)
     top_k_docs = model.get_top_n(tokenized_query, corpus, n=k)
 
+    insensitive_comparers = {}
+    for qw in query_words:
+        insensitive_comparers[qw] = re.compile(re.escape(qw), re.IGNORECASE)
+
     results = {'titles': [], 'abstracts': [], 'ids': []}
     for i in top_k_docs:
         abstract = i['abstract'].replace('\n','')
@@ -24,7 +30,11 @@ def get_top_k_docs(model, query, corpus, k=100):
         if abstract == '':
             continue
         
-        doc_text = i['title'].replace('\n','').lower() + ' ' + i['abstract'].replace('\n','').lower() + ' ' + i['introduction'].replace('\n','').lower()
+        title = i['title'].replace('\n','')
+        if title == '':
+            continue
+
+        doc_text = title.lower() + ' ' + abstract.lower() + ' ' + i['introduction'].replace('\n','').lower()
         query_words_found = False
         for qw in query_words:
             if qw in doc_text:
@@ -32,10 +42,14 @@ def get_top_k_docs(model, query, corpus, k=100):
                 break 
         if not query_words_found:
             continue
+        
+        # Bold mark query words in abstract
+        for qw in query_words:
+            abstract = insensitive_comparers[qw].sub('<b>' + qw + '</b>', abstract)
 
         results['abstracts'].append(abstract)
         results['ids'].append(i['id'])
-        results['titles'].append(i['title'].replace('\n',''))
+        results['titles'].append(title.title())
 
     return results
 
@@ -48,7 +62,7 @@ def store_relevance_judgements(query, doc_id, ip, is_rel):
         ip: IP address of the user
         is_rel: 0 (not rel) or 1 (rel)
     """
-    if is_rel not in ['0','1']:
+    if is_rel not in ['-1','1']:
         print('Invalid Relevance Feedback:', is_rel)
         return
     
