@@ -18,7 +18,7 @@ def index():
 @application.route('/search/', methods=['POST'])
 def search():
     query = request.form['query']
-    docs = get_top_k_docs(model, query, corpus, k=100)
+    docs = get_top_k_docs(model, query, corpus, k=50)
     
     return jsonify(docs)
 

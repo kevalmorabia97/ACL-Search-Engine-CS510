@@ -8,6 +8,7 @@
 var numResults;
 var query = "";
 var ip = "";
+resultData = null;
 var resultPage = 0;
 var resultsPerPage = 10;
 
@@ -21,57 +22,61 @@ $(function (){
 });
 
 var get_results = function(){
-    $(".search-results-container").empty();
-
     $.ajax({
         type: 'POST',
         url: URL + "search/",
         data: {query: query, ip: ip, page: resultPage},
         dataType: 'json',
-        success: function(resultData){
-            var limit = Math.min(resultData.titles.length - resultsPerPage*resultPage, resultsPerPage)
-            for (var i=0; i < limit; ++i){
-                rank = resultPage * resultsPerPage + i
-                $(".search-results-container").append("<hr><div class=\"query-result\">");
-                $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue; margin:0px;\">" + resultData.titles[rank] + "</p>");
-                buttons = "<p><input type=\"radio\" class=\"rel-radio\" id=\"rel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"rel_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"rel_" + resultData.ids[rank] + "\" style=\"color:green;\">Relevant</label>" 
-                        + "<input type=\"radio\" class=\"notrel-radio\" id=\"notrel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"non_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"notrel_" + resultData.ids[rank] + "\" style=\"color:red;\">Not Relevant</label></p>";
-                $(".search-results-container").append(buttons);
-                $(".search-results-container").append("<table><tr><td>" + resultData.abstracts[rank] + "</td></tr></table>");
-                $(".search-results-container").append("<input type=button class=\"search-related\" name=\"" + resultData.titles[rank] + "\" value=\"Show similar papers\">");
-                $(".search-results-container").append("</div>");
-            }
-
-            // Saving Relevance Feedback results
-            $('input[type=radio]').on('change', function(){
-                $.post(URL+'save_relevance/', {query: query, ip: ip, doc_id: this.name, is_rel: this.id == 'rel_' + this.name ? 1 : -1}, dataType='json');
-            });
-
-            // Searching related papers
-            $('input[class=\"search-related\"]').on('click', function(){
-                $("#query").val(this.name);
-                $("#search-button").click();
-            });
-
-            $("#next").show();
-            $("#backpage").show();
-            $("#message").hide();
-
-            if(limit == 0 && resultPage == 0){
-                $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue\">Unfortunately, we were not able to find papers that match your query.</p>");
-                $("#next").hide();
-                $("#backpage").hide();
-            }
-
-            if(resultData.titles.length <= (resultPage+1)*resultsPerPage){
-                $("#next").hide();
-            }
-
-            if(resultPage == 0){
-                $("#backpage").hide();
-            }
+        success: function(data){
+            resultData = data;
+            show_results();
         }
     });
+};
+
+var show_results = function(){
+    $(".search-results-container").empty();
+    var limit = Math.min(resultData.titles.length - resultsPerPage*resultPage, resultsPerPage)
+    for (var i=0; i < limit; ++i){
+        rank = resultPage * resultsPerPage + i
+        $(".search-results-container").append("<hr><div class=\"query-result\">");
+        $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue; margin:0px;\">" + resultData.titles[rank] + "</p>");
+        buttons = "<p><input type=\"radio\" class=\"rel-radio\" id=\"rel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"rel_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"rel_" + resultData.ids[rank] + "\" style=\"color:green;\">Relevant</label>" 
+                + "<input type=\"radio\" class=\"notrel-radio\" id=\"notrel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"non_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"notrel_" + resultData.ids[rank] + "\" style=\"color:red;\">Not Relevant</label></p>";
+        $(".search-results-container").append(buttons);
+        $(".search-results-container").append("<table><tr><td>" + resultData.abstracts[rank] + "</td></tr></table>");
+        $(".search-results-container").append("<input type=button class=\"search-related\" name=\"" + resultData.titles[rank] + "\" value=\"Show similar papers\">");
+        $(".search-results-container").append("</div>");
+    }
+
+    // Saving Relevance Feedback results
+    $('input[type=radio]').on('change', function(){
+        $.post(URL+'save_relevance/', {query: query, ip: ip, doc_id: this.name, is_rel: this.id == 'rel_' + this.name ? 1 : -1}, dataType='json');
+    });
+
+    // Searching related papers
+    $('input[class=\"search-related\"]').on('click', function(){
+        $("#query").val(this.name);
+        $("#search-button").click();
+    });
+
+    $("#next").show();
+    $("#backpage").show();
+    $("#message").hide();
+
+    if(limit == 0 && resultPage == 0){
+        $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue\">Unfortunately, we were not able to find papers that match your query.</p>");
+        $("#next").hide();
+        $("#backpage").hide();
+    }
+
+    if(resultData.titles.length <= (resultPage+1)*resultsPerPage){
+        $("#next").hide();
+    }
+
+    if(resultPage == 0){
+        $("#backpage").hide();
+    }
 };
 
 $(document).ready(function(){
@@ -86,14 +91,14 @@ $(document).ready(function(){
         $("#next").click(function(){
                 resultPage = resultPage + 1
                 query = $("#query").val();
-                get_results();
+                show_results();
         });
 
 
         $("#backpage").click(function(){
                 resultPage = resultPage - 1
                 query = $("#query").val();
-                get_results();
+                show_results();
         });
 
         $(".search-results-container").on("change", 'input[name^="paperid"]:checked', function() {
