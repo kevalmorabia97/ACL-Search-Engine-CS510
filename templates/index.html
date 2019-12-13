@@ -7,7 +7,6 @@
 <script>
 var numResults;
 var query = "";
-var ip = "";
 resultData = null;
 var resultPage = 0;
 var resultsPerPage = 10;
@@ -25,7 +24,7 @@ var get_results = function(){
     $.ajax({
         type: 'POST',
         url: URL + "search/",
-        data: {query: query, ip: ip, page: resultPage},
+        data: {query: query},
         dataType: 'json',
         success: function(data){
             resultData = data;
@@ -51,7 +50,7 @@ var show_results = function(){
 
     // Saving Relevance Feedback results
     $('input[type=radio]').on('change', function(){
-        $.post(URL+'save_relevance/', {query: query, ip: ip, doc_id: this.name, is_rel: this.id == 'rel_' + this.name ? 1 : -1}, dataType='json');
+        $.post(URL+'save_relevance/', {query: query, doc_id: this.name, rel_score: this.id == 'rel_' + this.name ? 1 : -1}, dataType='json');
     });
 
     // Searching related papers
@@ -101,35 +100,11 @@ $(document).ready(function(){
                 show_results();
         });
 
-        $(".search-results-container").on("change", 'input[name^="paperid"]:checked', function() {
-                var selectedVal = $(this).val();
-                $.ajax({
-                type: 'POST',
-                url: URL + "buttonlog/",
-                data: JSON.stringify({query: query, value: selectedVal, ip: ip}),
-                });
-        });
-
-        $(".search-results-container").delegate("a", "click",function(){
-            var url = $(this).attr("id");
-            var r = $(this).attr("rank");
-            $.ajax({
-            type: 'POST',
-            url: URL + "urllog/",
-            data: JSON.stringify({query: query, value: url, ip: ip, rank:r}),
-            });
-        });
-
         $("#query").keyup(function(event) {
             if (event.keyCode === 13) {
             $("#search-button").click();
         }
         });
-
-        $.getJSON('https://api.ipify.org?format=json', function(data){
-            ip = data.ip;
-        });
-
 });
 </script>
 

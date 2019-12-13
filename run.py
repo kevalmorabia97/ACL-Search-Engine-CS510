@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from rank_bm25 import BM25Okapi, BM25Plus
 
 from preprocessing import read_file
-from search_engine import get_top_k_docs, store_relevance_judgements
+from search_engine import SearchEngine
 
 
 application = Flask(__name__)
@@ -18,7 +18,7 @@ def index():
 @application.route('/search/', methods=['POST'])
 def search():
     query = request.form['query']
-    docs = get_top_k_docs(model, query, corpus, k=50)
+    docs = engine.get_top_k_docs(query, k=50)
     
     return jsonify(docs)
 
@@ -27,17 +27,15 @@ def search():
 def save_relevance():
     query = request.form['query']
     doc_id = request.form['doc_id']
-    ip = request.form['ip']
-    is_rel = request.form['is_rel']
+    rel_score = request.form['rel_score']
 
-    store_relevance_judgements(query, doc_id, ip, is_rel)
+    engine.store_relevance_judgements(query, doc_id, rel_score)
     return ('', 204)
 
 
 if __name__ == '__main__':
-    print('Loading Corpus...')
     corpus, tokenized_corpus = read_file()
     model = BM25Plus(tokenized_corpus)
-    print('Corpus Loaded!')
+    engine = SearchEngine(model, corpus, 'data/relevance_feedback.txt')
 
     application.run()
