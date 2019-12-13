@@ -10,7 +10,7 @@ var query = "";
 var ip = "";
 var resultPage = 0;
 
-var URL = "http://127.0.0.1:5000/"
+var URL = window.location.href;
 
 $(function (){
     $("#SearchWait").hide();
@@ -28,7 +28,8 @@ var get_results = function(){
         data: {query: query, ip: ip, page: resultPage},
         dataType: 'json',
         success: function(resultData){
-            var limit = Math.min(resultData.titles.length, 10)
+            console.log(resultData.titles.length);
+            var limit = Math.min(resultData.titles.length - 10*resultPage, 10)
             for (var i=0; i < limit; ++i){
                 rank = resultPage * 10 + i
                 $(".search-results-container").append("<hr><div class=\"query-result\">");
@@ -62,7 +63,7 @@ var get_results = function(){
                 $("#backpage").hide();
             }
 
-            if(limit == 0 && resultPage != 0){
+            if(resultData.titles.length <= (resultPage+1)*10){
                 $("#next").hide();
             }
 
