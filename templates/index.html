@@ -9,6 +9,7 @@ var numResults;
 var query = "";
 var ip = "";
 var resultPage = 0;
+var resultsPerPage = 10;
 
 var URL = window.location.href;
 
@@ -28,10 +29,9 @@ var get_results = function(){
         data: {query: query, ip: ip, page: resultPage},
         dataType: 'json',
         success: function(resultData){
-            console.log(resultData.titles.length);
-            var limit = Math.min(resultData.titles.length - 10*resultPage, 10)
+            var limit = Math.min(resultData.titles.length - resultsPerPage*resultPage, resultsPerPage)
             for (var i=0; i < limit; ++i){
-                rank = resultPage * 10 + i
+                rank = resultPage * resultsPerPage + i
                 $(".search-results-container").append("<hr><div class=\"query-result\">");
                 $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue; margin:0px;\">" + resultData.titles[rank] + "</p>");
                 buttons = "<p><input type=\"radio\" class=\"rel-radio\" id=\"rel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"rel_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"rel_" + resultData.ids[rank] + "\" style=\"color:green;\">Relevant</label>" 
@@ -63,7 +63,7 @@ var get_results = function(){
                 $("#backpage").hide();
             }
 
-            if(resultData.titles.length <= (resultPage+1)*10){
+            if(resultData.titles.length <= (resultPage+1)*resultsPerPage){
                 $("#next").hide();
             }
 
