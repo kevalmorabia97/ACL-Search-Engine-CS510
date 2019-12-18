@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-<title>CS510 Pre Project Demo</title>
-<meta charset="utf-8">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<title>CS510 ACL Paper Search Engine</title>
+<meta charset='utf-8'>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
 <script>
 var numResults;
-var query = "";
+var query = '';
 resultData = null;
 var resultPage = 0;
 var resultsPerPage = 10;
@@ -14,38 +14,44 @@ var resultsPerPage = 10;
 var URL = window.location.href;
 
 $(function (){
-    $("#SearchWait").hide();
-    $("#next").hide();
-    $("#backpage").hide();
-    $("#message").hide();
+    $('#SearchWait').hide();
+    $('#next').hide();
+    $('#backpage').hide();
+    $('#message').hide();
 });
 
-var get_results = function(){
+var getResults = function(){
     $.ajax({
         type: 'POST',
-        url: URL + "search/",
+        url: URL + 'search/',
         data: {query: query},
         dataType: 'json',
         success: function(data){
             resultData = data;
-            show_results();
+            showResults();
         }
     });
 };
 
-var show_results = function(){
-    $(".search-results-container").empty();
+var showResults = function(){
+    $('.search-results-container').empty();
     var limit = Math.min(resultData.titles.length - resultsPerPage*resultPage, resultsPerPage)
     for (var i=0; i < limit; ++i){
-        rank = resultPage * resultsPerPage + i
-        $(".search-results-container").append("<hr><div class=\"query-result\">");
-        $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue; margin:0px;\">" + resultData.titles[rank] + "</p>");
-        buttons = "<p><input type=\"radio\" class=\"rel-radio\" id=\"rel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"rel_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"rel_" + resultData.ids[rank] + "\" style=\"color:green;\">Relevant</label>" 
-                + "<input type=\"radio\" class=\"notrel-radio\" id=\"notrel_" + resultData.ids[rank] + "\" name=\"" + resultData.ids[rank] + "\" value=\"non_" + resultData.ids[rank] + "_" + rank + "\"><label for=\"notrel_" + resultData.ids[rank] + "\" style=\"color:red;\">Not Relevant</label></p>";
-        $(".search-results-container").append(buttons);
-        $(".search-results-container").append("<table><tr><td>" + resultData.abstracts[rank] + "</td></tr></table>");
-        $(".search-results-container").append("<input type=button class=\"search-related\" name=\"" + resultData.titles[rank] + "\" value=\"Show similar papers\">");
-        $(".search-results-container").append("</div>");
+        rank = resultPage * resultsPerPage + i;
+        $('.search-results-container').append('<hr><div class="query-result">');
+
+        if(resultData.links[rank]){
+            $('.search-results-container').append('<p style="font-size:20px; color:DarkBlue; margin:0px;"><a href="' + resultData.links[rank] + '" target="_blank" onClick="selectRadio(' + resultData.ids[rank] + ')">' + resultData.titles[rank] + '</a></p>');
+        }else{
+            $('.search-results-container').append('<p style="font-size:20px; color:DarkBlue; margin:0px;">' + resultData.titles[rank] + '</p>');
+        }
+
+        buttons = '<p><input type="radio" class="rel-radio" id="rel_' + resultData.ids[rank] + '" name="' + resultData.ids[rank] + '" value="rel_' + resultData.ids[rank] + '_' + rank + '"><label for="rel_' + resultData.ids[rank] + '" style="color:green;">Relevant</label>' 
+                + '<input type="radio" class="notrel-radio" id="notrel_' + resultData.ids[rank] + '" name="' + resultData.ids[rank] + '" value="non_' + resultData.ids[rank] + '_' + rank + '"><label for="notrel_' + resultData.ids[rank] + '" style="color:red;">Not Relevant</label></p>';
+        $('.search-results-container').append(buttons);
+        $('.search-results-container').append('<p>' + resultData.abstracts[rank] + '</p>');
+        $('.search-results-container').append('<input type=button class="search-related" name="' + resultData.titles[rank] + ' ' + resultData.abstracts[rank].replace(/<b>/g,'').replace(/<\/b>/g,'') + '" value="Show similar papers">');
+        $('.search-results-container').append('</div>');
     }
 
     // Saving Relevance Feedback results
@@ -54,58 +60,64 @@ var show_results = function(){
     });
 
     // Searching related papers
-    $('input[class=\"search-related\"]').on('click', function(){
-        $("#query").val(this.name);
-        $("#search-button").click();
+    $('input[class="search-related"]').on('click', function(){
+        $('#query').val(this.name);
+        $('#search-button').click();
     });
 
-    $("#next").show();
-    $("#backpage").show();
-    $("#message").hide();
+    $('#next').show();
+    $('#backpage').show();
+    $('#message').hide();
 
     if(limit == 0 && resultPage == 0){
-        $(".search-results-container").append("<p style=\"font-size:20px; color:DarkBlue\">Unfortunately, we were not able to find papers that match your query.</p>");
-        $("#next").hide();
-        $("#backpage").hide();
+        $('.search-results-container').append('<p style="font-size:20px; color:DarkBlue">Unfortunately, we were not able to find papers that match your query.</p>');
+        $('#next').hide();
+        $('#backpage').hide();
     }
 
     if(resultData.titles.length <= (resultPage+1)*resultsPerPage){
-        $("#next").hide();
+        $('#next').hide();
     }
 
     if(resultPage == 0){
-        $("#backpage").hide();
+        $('#backpage').hide();
     }
 };
 
+// Saving as relevant if link is clicked
+var selectRadio = function(doc_id){
+    $('#rel_' + doc_id).click();
+};
+
 $(document).ready(function(){
+    $('#search-button').click(function(){
+        resultPage = 0;
+        query = $('#query').val();
+        example_image = 'none';
+        getResults();
+    });
 
-        $("#search-button").click(function(){
-                resultPage = 0;
-                query = $("#query").val();
-                example_image = "none";
-                get_results();
-        });
-
-        $("#next").click(function(){
-                resultPage = resultPage + 1
-                query = $("#query").val();
-                show_results();
-        });
+    $('#next').click(function(){
+        resultPage = resultPage + 1;
+        query = $('#query').val();
+        showResults();
+    });
 
 
-        $("#backpage").click(function(){
-                resultPage = resultPage - 1
-                query = $("#query").val();
-                show_results();
-        });
+    $('#backpage').click(function(){
+        resultPage = resultPage - 1;
+        query = $('#query').val();
+        showResults();
+    });
 
-        $("#query").keyup(function(event) {
-            if (event.keyCode === 13) {
-            $("#search-button").click();
+    $('#query').keydown(function(event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            $('#search-button').click();
         }
-        });
+    });
 });
+
 </script>
 
 <style>
@@ -140,16 +152,16 @@ $(document).ready(function(){
 <body>
 <center>
     <h1>ACL Paper Search Engine</h1>
-    <font size="3">Search for papers in the domain of Natural Language Processing</font>
-    <p style="color: crimson;">Masterminds behind this tool: <b style="font-family: Georgia,Times,Times New Roman,serif;">Keval Morabia, Tara Vijaykumar, Malcolm Tivelius, Shubham Singhal</b></p>
-    <input id="query" type="text" size="75px" style="height: 20px; border-radius: 7px;"/>
-    <button type="button" id="search-button" class="my-button" value="none"> <b>Find Papers !</b></button>
+    <font size='3'>Search for papers in the domain of Natural Language Processing</font>
+    <p style='color: crimson;'>Masterminds behind this tool: <b style='font-family: Georgia,Times,Times New Roman,serif;'>Keval Morabia, Tara Vijaykumar, Malcolm Tivelius, Shubham Singhal</b></p>
+    <textarea id='query' rows='3' cols='75' style='border-radius: 7px;' autofocus placeholder='Enter your Query here'></textarea>
+    <button type='button' id='search-button' class='my-button' value='none'> <b>Find Papers !</b></button>
 </center>
 <br>
-<div class="search-results-container"> </div>
+<div class='search-results-container'> </div>
 <center>
-<button type="button" id="backpage" class="my-button" value="none"> <b>Go Back</b></button>
-<button type="button" id="next" class="my-button" value="none"><b>I Want More !</b></button>
+<button type='button' id='backpage' class='my-button' value='none'> <b>Go Back</b></button>
+<button type='button' id='next' class='my-button' value='none'><b>I Want More !</b></button>
 
 </center>
 <br><br>
