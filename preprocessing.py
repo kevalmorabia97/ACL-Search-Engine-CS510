@@ -80,6 +80,24 @@ def splitDataFrameIntoSmaller(df, chunkSize = 20000):
         listOfDf.append(df[i*chunkSize:(i+1)*chunkSize])
     return listOfDf
 
+def get_corpus(filename):
+    df = pd.read_pickle(filename)
+    corpus = []
+    for i in range(df.shape[0]):
+        corpus.append([df.iloc[i]['title'] + " " + df.iloc[i]['abstract'] + " " + df.iloc[i]['introduction']])
+    return corpus
+
+def get_tokenized_corpus(filename):
+    df = pd.read_pickle(filename)
+    tokenized_corpus = []
+    print(df.shape)
+    for i in range(df.shape[0]):
+        tokenized_corpus.append([df.iloc[i]['tokens']])
+    return tokenized_corpus
+
+# print(get_corpus('corpus1.pkl'))
+# print(get_tokenized_corpus('tokenized_corpus1.pkl'))
+
 # preprocess_document("C:/Users/Dell-pc/Desktop/UIUC/Fall 2019/CS 510 IR/grobid_processed")
 # preprocess_content('corpus1.pkl', 1)
 # preprocess_content('corpus2.pkl', 2)
