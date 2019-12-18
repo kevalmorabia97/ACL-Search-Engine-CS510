@@ -109,3 +109,10 @@ def get_tokenized_corpus(filename):
 # doc_scores[::-1].sort()
 # top_10_doc = bm25.get_top_n(['natural','language'], corpus, n=10)
 # print(top_10_doc)
+
+def preprocess_query(query_string):
+    query_string = query_string.lower()
+    new_text = tokenizer.tokenize(query_string)
+    new_text = [word.translate(str.maketrans('', '', string.punctuation)) for word in new_text if word not in stopwords.words('english') and word not in more_stopwords]
+    new_text = [lemmatizer.lemmatize(word) for word in new_text]
+    return new_text
