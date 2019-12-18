@@ -21,7 +21,7 @@ class SearchEngine():
                 query, doc_id, rel_score = line.replace('\n','').split(',')
                 self.relevance_scores[(tuple(preprocess_query(query)), int(doc_id))] += int(rel_score)
 
-    def get_top_k_docs(self, query, k=100, long_query=True):
+    def get_top_k_docs(self, query, k=100, long_query=False):
         """
         Args:
             query: string
