@@ -96,3 +96,10 @@ def get_tokenized_corpus(filename):
 # preprocess_content('corpus2.pkl', 2)
 # print(get_corpus('corpus1.pkl'))
 # print(get_tokenized_corpus('tokenized_corpus1.pkl'))
+
+def preprocess_query(query_string):
+    query_string = query_string.lower()
+    new_text = tokenizer.tokenize(query_string)
+    new_text = [word.translate(str.maketrans('', '', string.punctuation)) for word in new_text if word not in stopwords.words('english') and word not in more_stopwords]
+    new_text = [lemmatizer.lemmatize(word) for word in new_text]
+    return new_text
