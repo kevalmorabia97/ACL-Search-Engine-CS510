@@ -81,25 +81,31 @@ def get_corpus(filename):
     df = pd.read_pickle(filename)
     corpus = []
     for i in range(df.shape[0]):
-        corpus.append([df.iloc[i]['title'] + " " + df.iloc[i]['abstract'] + " " + df.iloc[i]['introduction']])
+        link = ''
+        if df.iloc[i]['link'] != '':
+            link = 'https://www.aclweb.org/anthology/'+df.iloc[i]['link'].strip('.tei.xml')+'.pdf'
+        corpus.append({'title': df.iloc[i]['title'], 'abstract': df.iloc[i]['abstract'], 'introduction': df.iloc[i]['introduction'],
+                       'link': link, 'id': df.iloc[i]['id']})
     return corpus
 
 def get_tokenized_corpus(filename):
     df = pd.read_pickle(filename)
     tokenized_corpus = []
     for i in range(df.shape[0]):
-        tokenized_corpus.append([df.iloc[i]['tokens']])
+        tokenized_corpus.append(df.iloc[i]['tokens'])
     return tokenized_corpus
 
 # preprocess_document()
 # preprocess_content('corpus1.pkl', 1)
 # preprocess_content('corpus2.pkl', 2)
-# print(get_corpus('corpus1.pkl'))
+# print(get_corpus('corpus1.pkl')[-1])
 # print(get_tokenized_corpus('tokenized_corpus1.pkl'))
 
-def preprocess_query(query_string):
-    query_string = query_string.lower()
-    new_text = tokenizer.tokenize(query_string)
-    new_text = [word.translate(str.maketrans('', '', string.punctuation)) for word in new_text if word not in stopwords.words('english') and word not in more_stopwords]
-    new_text = [lemmatizer.lemmatize(word) for word in new_text]
-    return new_text
+# test----------------------------------------------------------------------
+# corpus, tokenized_corpus = get_corpus('corpus1.pkl'), get_tokenized_corpus('tokenized_corpus1.pkl')
+# import rank_bm25
+# bm25 = rank_bm25.BM25Plus(tokenized_corpus)
+# doc_scores = bm25.get_scores(['natural','language'])
+# doc_scores[::-1].sort()
+# top_10_doc = bm25.get_top_n(['natural','language'], corpus, n=10)
+# print(top_10_doc)
