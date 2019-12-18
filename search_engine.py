@@ -40,7 +40,7 @@ class SearchEngine():
 
 
 
-        query_words = preprocess_query(query, stemming=False, lower_case=True, lemma=False, stopword_removal=True)
+        query_words = preprocess_query(query)
         top_k_docs = self.model.get_top_n(tokenized_query, self.corpus, n=k)
 
         insensitive_comparers = {}
