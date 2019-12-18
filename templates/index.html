@@ -21,6 +21,8 @@ $(function (){
 });
 
 var getResults = function(){
+    $('.search-results-container').empty();
+    $('.search-results-container').append('Fetching your results...');
     $.ajax({
         type: 'POST',
         url: URL + 'search/',
