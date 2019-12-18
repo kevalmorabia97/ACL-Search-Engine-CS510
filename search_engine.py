@@ -114,7 +114,7 @@ class SearchEngine():
             return
         
         with open(self.relevance_scores_file, 'a') as f:
-            f.write(','.join([str(i) for i in (query, doc_id, rel_score)]) + '\n')
+            f.write(','.join([str(i) for i in (query.replace(',',''), doc_id, rel_score)]) + '\n')
 
         query_words = preprocess_query(query)
         if len(query_words) > 10: # long query search
