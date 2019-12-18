@@ -125,7 +125,8 @@ $(document).ready(function(){
 	background-color: #2f49ac;
 	border-radius: 7px;
     height: 30px;
-    color: #ffffff
+    color: #ffffff;
+    vertical-align: top
 }
 
 .search-related {
@@ -154,16 +155,17 @@ $(document).ready(function(){
     <h1>ACL Paper Search Engine</h1>
     <font size='3'>Search for papers in the domain of Natural Language Processing</font>
     <p style='color: crimson;'>Masterminds behind this tool: <b style='font-family: Georgia,Times,Times New Roman,serif;'>Keval Morabia, Tara Vijaykumar, Malcolm Tivelius, Shubham Singhal</b></p>
-    <textarea id='query' rows='3' cols='75' style='border-radius: 7px;' autofocus placeholder='Enter your Query here'></textarea>
-    <button type='button' id='search-button' class='my-button' value='none'> <b>Find Papers !</b></button>
+    <div>
+        <textarea id='query' rows='3' cols='75' style='border-radius: 7px;' autofocus placeholder='Enter your Query here'></textarea>
+        <button type='button' id='search-button' class='my-button' value='none'> <b>Find Papers !</b></button>
+    </div>
 </center>
 <br>
 <div class='search-results-container'> </div>
 <center>
-<button type='button' id='backpage' class='my-button' value='none'> <b>Go Back</b></button>
-<button type='button' id='next' class='my-button' value='none'><b>I Want More !</b></button>
-
+    <button type='button' id='backpage' class='my-button' value='none'> <b>Go Back</b></button>
+    <button type='button' id='next' class='my-button' value='none'><b>I Want More !</b></button>
 </center>
-<br><br>
+<br>
 </body>
 </html>
