@@ -19,7 +19,15 @@ class SearchEngine():
         with open(self.relevance_scores_file, 'r') as f:
             for line in f:
                 query, doc_id, rel_score = line.replace('\n','').split(',')
-                self.relevance_scores[(tuple(preprocess_query(query)), int(doc_id))] += int(rel_score)
+                
+                query_words = preprocess_query(query)
+                if len(query_words) > 10: # long query search
+                    r = Rake(min_length=1, max_length=4)
+                    r.extract_keywords_from_text(query)
+                    phrases = r.get_ranked_phrases()
+                    query_words = ' '.join(phrases).split()
+
+                self.relevance_scores[(tuple(query_words), int(doc_id))] += int(rel_score)
 
     def get_top_k_docs(self, query, k=100):
         """
@@ -108,4 +116,11 @@ class SearchEngine():
         with open(self.relevance_scores_file, 'a') as f:
             f.write(','.join([str(i) for i in (query, doc_id, rel_score)]) + '\n')
 
-        self.relevance_scores[(tuple(preprocess_query(query)), int(doc_id))] += int(rel_score)
+        query_words = preprocess_query(query)
+        if len(query_words) > 10: # long query search
+            r = Rake(min_length=1, max_length=4)
+            r.extract_keywords_from_text(query)
+            phrases = r.get_ranked_phrases()
+            query_words = ' '.join(phrases).split()
+
+        self.relevance_scores[(tuple(query_words), int(doc_id))] += int(rel_score)
