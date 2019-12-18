@@ -1,5 +1,6 @@
 from collections import defaultdict
 import re
+from rake_nltk import Rake
 
 from preprocessing import preprocess_query
 
@@ -20,7 +21,7 @@ class SearchEngine():
                 query, doc_id, rel_score = line.replace('\n','').split(',')
                 self.relevance_scores[(tuple(preprocess_query(query)), int(doc_id))] += int(rel_score)
 
-    def get_top_k_docs(self, query, k=100):
+    def get_top_k_docs(self, query, k=100, long_query=True):
         """
         Args:
             query: string
@@ -29,7 +30,16 @@ class SearchEngine():
         Returns:
             top_k_docs: dictionary keys: titles, abstracts, ids. Each element in dict[key] is a list of k elements in descending order of relevance
         """
+
         tokenized_query = preprocess_query(query)
+        if long_query:
+            r = Rake(min_length=1, max_length=4)
+            r.extract_keywords_from_text(' '.join(tokenized_query))
+            phrases = r.get_ranked_phrases()
+            tokenized_query = ' '.join(phrases).split()
+
+
+
         query_words = preprocess_query(query, stemming=False, lower_case=True, lemma=False, stopword_removal=True)
         top_k_docs = self.model.get_top_n(tokenized_query, self.corpus, n=k)
 
