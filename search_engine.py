@@ -42,8 +42,9 @@ class SearchEngine():
         if len(query_words) > 10: # long query search
             r = Rake(min_length=1, max_length=4)
             r.extract_keywords_from_text(query)
-            phrases = r.get_ranked_phrases()
-            query_words = ' '.join(phrases).split()
+            phrases = list(set(' '.join(r.get_ranked_phrases()).split()))
+            query_words = preprocess_query(' '.join(phrases))
+            
 
         top_k_docs = self.model.get_top_n(query_words, self.corpus, n=k)
 
