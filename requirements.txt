@@ -3,4 +3,4 @@ rake_nltk==1.0.4
 Flask==1.1.1
 rank_bm25==0.2
 nltk==3.4.5
-Flask_Cors==3.0.8
+Flask_Cors==3.0.9
