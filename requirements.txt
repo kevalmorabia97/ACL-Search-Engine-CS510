@@ -1,6 +1,6 @@
 pandas==0.23.4
 rake_nltk==1.0.4
-Flask==1.1.1
+Flask==2.3.2
 rank_bm25==0.2
 nltk==3.6.5
 Flask_Cors==3.0.9
